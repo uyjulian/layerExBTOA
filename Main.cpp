@@ -415,7 +415,7 @@ none:
 			WrtRefT  p = dbuf + y * dpitch + 3;
 			for (long x = 0; x < diw; x++, p+=4) *p = clrval;
 		}
-		layObj.FuncCall(0, L"update", &updateHint, NULL, dl, dt, diw, dih);
+		layObj.FuncCall(0, L"update", &updateHint, NULL, (tjs_int64)dl, (tjs_int64)dt, (tjs_int64)diw, (tjs_int64)dih);
 	}
 	return TJS_S_OK;
 }
