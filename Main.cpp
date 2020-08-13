@@ -14,8 +14,8 @@ iTJSDispatch2 *getLayerClass(void)
 // レイヤイメージ操作ユーティリティ
 
 // バッファ参照用の型
-typedef unsigned char       *WrtRefT;
-typedef unsigned char const *ReadRefT;
+typedef tjs_uint8       *WrtRefT;
+typedef tjs_uint8 const *ReadRefT;
 
 static tjs_uint32 hasImageHint, imageWidthHint, imageHeightHint;
 static tjs_uint32 mainImageBufferHint, mainImageBufferPitchHint, mainImageBufferForWriteHint;
@@ -259,9 +259,9 @@ copyAlphaToProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param,
 	dbuf += dpitch * t + l;
 
 	sbuf += 3;
-	unsigned char th = (unsigned char)threshold;
-	unsigned char on  = (unsigned char)matched;
-	unsigned char off = (unsigned char)otherwise;
+	tjs_uint8 th = (tjs_uint8)threshold;
+	tjs_uint8 on  = (tjs_uint8)matched;
+	tjs_uint8 off = (tjs_uint8)otherwise;
 	int mode = 0;
 	if (threshold >= 0 && threshold < 256) {
 		bool enmatch = (matched   >= 0 && matched   < 256);
@@ -314,7 +314,7 @@ clipAlphaRect(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSD
 	long w, h;
 	long dx, dy, dl, dt, diw, dih, dpitch;
 	long sx, sy, siw, sih, spitch;
-	unsigned char clrval = 0;
+	tjs_uint8 clrval = 0;
 	bool clr = false;
 	if (numparams < 7) return TJS_E_BADPARAMCOUNT;
 
@@ -328,7 +328,7 @@ clipAlphaRect(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSD
 	if (numparams >= 8 && param[7]->Type() != tvtVoid) {
 		long n = (long)param[7]->AsInteger();
 		clr = (n >= 0 && n < 256);
-		clrval = (unsigned char)(n & 255);
+		clrval = (tjs_uint8)(n & 255);
 	}
 	if (w <= 0|| h <= 0) return TJS_E_INVALIDPARAM;
 
@@ -397,8 +397,8 @@ clipAlphaRect(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSD
 		p = dbuf + (y + dy) * dpitch + 3 + (dx*4);
 		q = sbuf + (y + sy) * spitch + 3 + (sx*4);
 		for (x = 0; x < w; x++, p+=4, q+=4) {
-			unsigned long n = (unsigned long)(*p) * (unsigned long)(*q);
-			*p = (unsigned char)((n + (n >> 7)) >> 8);
+			tjs_uint32 n = (tjs_uint32)(*p) * (tjs_uint32)(*q);
+			*p = (tjs_uint8)((n + (n >> 7)) >> 8);
 		}
 		if (clr) for (x = dx+w; x < diw; x++, p+=4) *p = clrval;
 	}
@@ -427,7 +427,7 @@ fillByProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJS
 	iTJSDispatch2 *layerClass = getLayerClass();
 	
 	if (numparams < 2) return TJS_E_BADPARAMCOUNT;
-	unsigned char index = (int)*param[0];
+	tjs_uint8 index = (int)*param[0];
 	tjs_uint32 color = (int)*param[1];
 
 	// 書き込み先
