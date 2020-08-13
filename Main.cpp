@@ -10,8 +10,6 @@ iTJSDispatch2 *getLayerClass(void)
 	return  var.AsObjectNoAddRef();
 }
 
-using DWORD = unsigned long;
-
 //----------------------------------------------
 // レイヤイメージ操作ユーティリティ
 
@@ -430,7 +428,7 @@ fillByProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJS
 	
 	if (numparams < 2) return TJS_E_BADPARAMCOUNT;
 	unsigned char index = (int)*param[0];
-	DWORD color = (int)*param[1];
+	tjs_uint32 color = (int)*param[1];
 
 	// 書き込み先
 	WrtRefT dbuf = 0;
@@ -456,11 +454,11 @@ fillByProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJS
 	
 	for (int y = 0; y < dh; y++) {
 		ReadRefT q = sbuf;
-		DWORD *p = (DWORD*)dbuf;
+		tjs_uint32 *p = (tjs_uint32*)dbuf;
 		ttstr s;
 		for (int x = 0; x < dw; x++) {
 			if (*q == index) {
-				*(DWORD*)p = color;
+				*(tjs_uint32*)p = color;
 			}
 			q++;
 			p++;
