@@ -10,6 +10,8 @@ iTJSDispatch2 *getLayerClass(void)
 	return  var.AsObjectNoAddRef();
 }
 
+using DWORD = unsigned long;
+
 //----------------------------------------------
 // レイヤイメージ操作ユーティリティ
 
@@ -153,7 +155,7 @@ copyRightBlueToLeftAlpha(tTJSVariant *result, tjs_int numparams, tTJSVariant **p
 		dbuf += dpitch;
 	}
 	ncbPropAccessor layObj(lay);
-	layObj.FuncCall(0, L"update", &updateHint, NULL, (tjs_int64)0, (tjs_int64)0, (tjs_int64)dw, (tjs_int64)dh);
+	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)0, (tjs_int64)0, (tjs_int64)dw, (tjs_int64)dh);
 	return TJS_S_OK;
 }
 
@@ -189,7 +191,7 @@ copyBottomBlueToTopAlpha(tTJSVariant *result, tjs_int numparams, tTJSVariant **p
 		dbuf += dpitch;
 	}
 	ncbPropAccessor layObj(lay);
-	layObj.FuncCall(0, L"update", &updateHint, NULL, (tjs_int64)0, (tjs_int64)0, (tjs_int64)dw, (tjs_int64)dh);
+	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)0, (tjs_int64)0, (tjs_int64)dw, (tjs_int64)dh);
 	return TJS_S_OK;
 }
 
@@ -213,7 +215,7 @@ fillAlpha(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSDispa
 		dbuf += dpitch;
 	}
 	ncbPropAccessor layObj(lay);
-	layObj.FuncCall(0, L"update", &updateHint, NULL, (tjs_int64)l, (tjs_int64)t, (tjs_int64)dw, (tjs_int64)dh);
+	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)l, (tjs_int64)t, (tjs_int64)dw, (tjs_int64)dh);
 	return TJS_S_OK;
 }
 
@@ -297,7 +299,7 @@ copyAlphaToProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param,
 		dbuf += dpitch;
 	}
 	ncbPropAccessor layObj(lay);
-	layObj.FuncCall(0, L"update", &updateHint, NULL, (tjs_int64)l, (tjs_int64)t, (tjs_int64)w, (tjs_int64)h);
+	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)l, (tjs_int64)t, (tjs_int64)w, (tjs_int64)h);
 	return TJS_S_OK;
 }
 
@@ -403,9 +405,9 @@ clipAlphaRect(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSD
 		if (clr) for (x = dx+w; x < diw; x++, p+=4) *p = clrval;
 	}
 	if (clr) {
-		layObj.FuncCall(0, L"update", &updateHint, NULL, (tjs_int64)dl, (tjs_int64)dt, (tjs_int64)diw, (tjs_int64)dih);
+		layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)dl, (tjs_int64)dt, (tjs_int64)diw, (tjs_int64)dih);
 	} else {
-		layObj.FuncCall(0, L"update", &updateHint, NULL, (tjs_int64)dl+dx, (tjs_int64)dt+dy, (tjs_int64)w, (tjs_int64)h);
+		layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)dl+dx, (tjs_int64)dt+dy, (tjs_int64)w, (tjs_int64)h);
 	}
 	return TJS_S_OK;
 none:
@@ -415,7 +417,7 @@ none:
 			WrtRefT  p = dbuf + y * dpitch + 3;
 			for (long x = 0; x < diw; x++, p+=4) *p = clrval;
 		}
-		layObj.FuncCall(0, L"update", &updateHint, NULL, (tjs_int64)dl, (tjs_int64)dt, (tjs_int64)diw, (tjs_int64)dih);
+		layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)dl, (tjs_int64)dt, (tjs_int64)diw, (tjs_int64)dih);
 	}
 	return TJS_S_OK;
 }
@@ -467,7 +469,7 @@ fillByProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJS
 		dbuf += dpitch;
 	}
 	ncbPropAccessor layObj(lay);
-	layObj.FuncCall(0, L"update", &updateHint, NULL, (tjs_int64)l, (tjs_int64)t, (tjs_int64)dw, (tjs_int64)dh);
+	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)l, (tjs_int64)t, (tjs_int64)dw, (tjs_int64)dh);
 	return TJS_S_OK;
 }
 
