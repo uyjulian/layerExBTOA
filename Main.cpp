@@ -1,6 +1,12 @@
-#include "ncbind/ncbind.hpp"
+#include "ncbind.hpp"
 #include <vector>
 using namespace std;
+
+#ifndef WIN32
+typedef unsigned char BYTE;
+typedef tjs_uint16 WORD;
+typedef tjs_uint32 DWORD;
+#endif
 
 // レイヤクラスを参照
 iTJSDispatch2 *getLayerClass(void)
@@ -14,8 +20,8 @@ iTJSDispatch2 *getLayerClass(void)
 // レイヤイメージ操作ユーティリティ
 
 // バッファ参照用の型
-typedef tjs_uint8       *WrtRefT;
-typedef tjs_uint8 const *ReadRefT;
+typedef unsigned char       *WrtRefT;
+typedef unsigned char const *ReadRefT;
 
 static tjs_uint32 hasImageHint, imageWidthHint, imageHeightHint;
 static tjs_uint32 mainImageBufferHint, mainImageBufferPitchHint, mainImageBufferForWriteHint;
@@ -27,7 +33,7 @@ static tjs_uint32 updateHint;
  * レイヤのサイズとバッファを取得する
  */
 static bool
-GetLayerSize(iTJSDispatch2 *lay, long &w, long &h, long &pitch)
+GetLayerSize(iTJSDispatch2 *lay, tjs_int32 &w, tjs_int32 &h, tjs_int32 &pitch)
 {
 	iTJSDispatch2 *layerClass = getLayerClass();
 
@@ -40,14 +46,14 @@ GetLayerSize(iTJSDispatch2 *lay, long &w, long &h, long &pitch)
 
 	// レイヤサイズを取得
 	if (TJS_FAILED(layerClass->PropGet(0, TJS_W("imageWidth"), &imageWidthHint, &val, lay))) return false;
-	w = (long)val.AsInteger();
+	w = (tjs_int32)val.AsInteger();
 
 	if (TJS_FAILED(layerClass->PropGet(0, TJS_W("imageHeight"), &imageHeightHint, &val, lay))) return false;
-	h = (long)val.AsInteger();
+	h = (tjs_int32)val.AsInteger();
 
 	// ピッチ取得
 	if (TJS_FAILED(layerClass->PropGet(0, TJS_W("mainImageBufferPitch"), &mainImageBufferPitchHint, &val, lay))) return false;
-	pitch = (long)val.AsInteger();
+	pitch = (tjs_int32)val.AsInteger();
 
 	// 正常な値かどうか
 	return (w > 0 && h > 0 && pitch != 0);
@@ -55,7 +61,7 @@ GetLayerSize(iTJSDispatch2 *lay, long &w, long &h, long &pitch)
 
 // 書き込み用
 static bool
-GetLayerBufferAndSize(iTJSDispatch2 *lay, long &w, long &h, WrtRefT &ptr, long &pitch)
+GetLayerBufferAndSize(iTJSDispatch2 *lay, tjs_int32 &w, tjs_int32 &h, WrtRefT &ptr, tjs_int32 &pitch)
 {
 	iTJSDispatch2 *layerClass = getLayerClass();
 	
@@ -72,7 +78,7 @@ GetLayerBufferAndSize(iTJSDispatch2 *lay, long &w, long &h, WrtRefT &ptr, long &
  * クリップ領域のサイズとバッファを取得する
  */
 static bool
-GetClipSize(iTJSDispatch2 *lay, long &l, long &t, long &w, long &h, long &pitch)
+GetClipSize(iTJSDispatch2 *lay, tjs_int32 &l, tjs_int32 &t, tjs_int32 &w, tjs_int32 &h, tjs_int32 &pitch)
 {
 	iTJSDispatch2 *layerClass = getLayerClass();
 
@@ -85,17 +91,17 @@ GetClipSize(iTJSDispatch2 *lay, long &l, long &t, long &w, long &h, long &pitch)
 
 	// クリップサイズを取得
 	if (TJS_FAILED(layerClass->PropGet(0, TJS_W("clipLeft"), &clipLeftHint, &val, lay))) return false;
-	l = (long)val.AsInteger();
+	l = (tjs_int32)val.AsInteger();
 	if (TJS_FAILED(layerClass->PropGet(0, TJS_W("clipTop"),  &clipTopHint, &val, lay))) return false;
-	t = (long)val.AsInteger();
+	t = (tjs_int32)val.AsInteger();
 	if (TJS_FAILED(layerClass->PropGet(0, TJS_W("clipWidth"), &clipWidthHint, &val, lay))) return false;
-	w = (long)val.AsInteger();
+	w = (tjs_int32)val.AsInteger();
 	if (TJS_FAILED(layerClass->PropGet(0, TJS_W("clipHeight"), &clipHeightHint, &val, lay))) return false;
-	h = (long)val.AsInteger();
+	h = (tjs_int32)val.AsInteger();
 
 	// ピッチ取得
 	if (TJS_FAILED(layerClass->PropGet(0, TJS_W("mainImageBufferPitch"), &mainImageBufferPitchHint, &val, lay))) return false;
-	pitch = (long)val.AsInteger();
+	pitch = (tjs_int32)val.AsInteger();
 
 	// 正常な値かどうか
 	return (w > 0 && h > 0 && pitch != 0);
@@ -103,7 +109,7 @@ GetClipSize(iTJSDispatch2 *lay, long &l, long &t, long &w, long &h, long &pitch)
 
 // 書き込み用
 static bool
-GetClipBufferAndSize(iTJSDispatch2 *lay, long &l, long &t, long &w, long &h, WrtRefT &ptr, long &pitch)
+GetClipBufferAndSize(iTJSDispatch2 *lay, tjs_int32 &l, tjs_int32 &t, tjs_int32 &w, tjs_int32 &h, WrtRefT &ptr, tjs_int32 &pitch)
 {
 	iTJSDispatch2 *layerClass = getLayerClass();
 
@@ -130,7 +136,7 @@ copyRightBlueToLeftAlpha(tTJSVariant *result, tjs_int numparams, tTJSVariant **p
 {
 	// 書き込み先
 	WrtRefT dbuf = 0;
-	long dw, dh, dpitch;
+	tjs_int32 dw, dh, dpitch;
 	if (!GetLayerBufferAndSize(lay, dw, dh, dbuf, dpitch)) {
 		TVPThrowExceptionMessage(TJS_W("dest must be Layer."));
 	}
@@ -166,7 +172,7 @@ copyBottomBlueToTopAlpha(tTJSVariant *result, tjs_int numparams, tTJSVariant **p
 {
 	// 書き込み先
 	WrtRefT dbuf = 0;
-	long dw, dh, dpitch;
+	tjs_int32 dw, dh, dpitch;
 	if (!GetLayerBufferAndSize(lay, dw, dh, dbuf, dpitch)) {
 		TVPThrowExceptionMessage(TJS_W("dest must be Layer."));
 	}
@@ -198,7 +204,7 @@ fillAlpha(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSDispa
 {
 	// 書き込み先
 	WrtRefT dbuf = 0;
-	long l, t, dw, dh, dpitch;
+	tjs_int32 l, t, dw, dh, dpitch;
 	if (!GetClipBufferAndSize(lay, l, t, dw, dh, dbuf, dpitch)) {
 		TVPThrowExceptionMessage(TJS_W("dest must be Layer."));
 	}
@@ -224,15 +230,15 @@ copyAlphaToProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param,
 
 	ReadRefT sbuf = 0;
 	WrtRefT  dbuf = 0;
-	long l, t, w, h, spitch, dpitch, threshold = -1, matched = 1, otherwise = 0;
+	tjs_int32 l, t, w, h, spitch, dpitch, threshold = -1, matched = 1, otherwise = 0;
 	if (TJS_PARAM_EXIST(0)) {
-		threshold = (long)(param[0]->AsInteger());
+		threshold = (tjs_int32)(param[0]->AsInteger());
 	}
 	if (TJS_PARAM_EXIST(1)) {
-		matched = (long)(param[1]->AsInteger());
+		matched = (tjs_int32)(param[1]->AsInteger());
 	}
 	if (TJS_PARAM_EXIST(2)) {
-		otherwise = (long)(param[2]->AsInteger());
+		otherwise = (tjs_int32)(param[2]->AsInteger());
 	}
 
 	if (!GetClipSize(lay, l, t, w, h, spitch)) {
@@ -253,15 +259,15 @@ copyAlphaToProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param,
 	}
 	val.Clear();
 	if (TJS_FAILED(layerClass->PropGet(0, TJS_W("provinceImageBufferPitch"), &provinceImageBufferPitchHint, &val, lay)) ||
-		(dpitch = (long)val.AsInteger()) == 0) {
+		(dpitch = (tjs_int32)val.AsInteger()) == 0) {
 		TVPThrowExceptionMessage(TJS_W("dst has no province pitch."));
 	}
 	dbuf += dpitch * t + l;
 
 	sbuf += 3;
-	tjs_uint8 th = (tjs_uint8)threshold;
-	tjs_uint8 on  = (tjs_uint8)matched;
-	tjs_uint8 off = (tjs_uint8)otherwise;
+	unsigned char th = (unsigned char)threshold;
+	unsigned char on  = (unsigned char)matched;
+	unsigned char off = (unsigned char)otherwise;
 	int mode = 0;
 	if (threshold >= 0 && threshold < 256) {
 		bool enmatch = (matched   >= 0 && matched   < 256);
@@ -311,24 +317,24 @@ clipAlphaRect(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSD
 	WrtRefT  dbuf = 0;
 	iTJSDispatch2 *src = 0;
 	tTJSVariant val;
-	long w, h;
-	long dx, dy, dl, dt, diw, dih, dpitch;
-	long sx, sy, siw, sih, spitch;
-	tjs_uint8 clrval = 0;
+	tjs_int32 w, h;
+	tjs_int32 dx, dy, dl, dt, diw, dih, dpitch;
+	tjs_int32 sx, sy, siw, sih, spitch;
+	unsigned char clrval = 0;
 	bool clr = false;
 	if (numparams < 7) return TJS_E_BADPARAMCOUNT;
 
-	dx  = (long)param[0]->AsInteger();
-	dy  = (long)param[1]->AsInteger();
+	dx  = (tjs_int32)param[0]->AsInteger();
+	dy  = (tjs_int32)param[1]->AsInteger();
 	src =       param[2]->AsObjectNoAddRef();
-	sx  = (long)param[3]->AsInteger();
-	sy  = (long)param[4]->AsInteger();
-	w   = (long)param[5]->AsInteger();
-	h   = (long)param[6]->AsInteger();
+	sx  = (tjs_int32)param[3]->AsInteger();
+	sy  = (tjs_int32)param[4]->AsInteger();
+	w   = (tjs_int32)param[5]->AsInteger();
+	h   = (tjs_int32)param[6]->AsInteger();
 	if (numparams >= 8 && param[7]->Type() != tvtVoid) {
-		long n = (long)param[7]->AsInteger();
+		tjs_int32 n = (tjs_int32)param[7]->AsInteger();
 		clr = (n >= 0 && n < 256);
-		clrval = (tjs_uint8)(n & 255);
+		clrval = (unsigned char)(n & 255);
 	}
 	if (w <= 0|| h <= 0) return TJS_E_INVALIDPARAM;
 
@@ -366,7 +372,7 @@ clipAlphaRect(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSD
 	if (sy < 0) { h += sy; dy -= sy; sy = 0; }
 
 	// srcの正方向のカット
-	long cut;
+	tjs_int32 cut;
 	if ((cut = sx + w - siw) > 0) w -= cut;
 	if ((cut = sy + h - sih) > 0) h -= cut;
 
@@ -384,7 +390,7 @@ clipAlphaRect(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSD
 
 	if (w <= 0 || h <= 0) goto none;
 
-	long x, y;
+	tjs_int32 x, y;
 	WrtRefT  p;
 	ReadRefT q;
 	if (clr) {
@@ -398,7 +404,7 @@ clipAlphaRect(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSD
 		q = sbuf + (y + sy) * spitch + 3 + (sx*4);
 		for (x = 0; x < w; x++, p+=4, q+=4) {
 			tjs_uint32 n = (tjs_uint32)(*p) * (tjs_uint32)(*q);
-			*p = (tjs_uint8)((n + (n >> 7)) >> 8);
+			*p = (unsigned char)((n + (n >> 7)) >> 8);
 		}
 		if (clr) for (x = dx+w; x < diw; x++, p+=4) *p = clrval;
 	}
@@ -411,9 +417,9 @@ clipAlphaRect(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSD
 none:
 	// 領域範囲外で演算が行われない場合
 	if (clr) {
-		for (long y = 0; y < dih; y++) {
+		for (tjs_int32 y = 0; y < dih; y++) {
 			WrtRefT  p = dbuf + y * dpitch + 3;
-			for (long x = 0; x < diw; x++, p+=4) *p = clrval;
+			for (tjs_int32 x = 0; x < diw; x++, p+=4) *p = clrval;
 		}
 		layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)dl, (tjs_int64)dt, (tjs_int64)diw, (tjs_int64)dih);
 	}
@@ -427,18 +433,18 @@ fillByProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJS
 	iTJSDispatch2 *layerClass = getLayerClass();
 	
 	if (numparams < 2) return TJS_E_BADPARAMCOUNT;
-	tjs_uint8 index = (int)*param[0];
-	tjs_uint32 color = (int)*param[1];
+	unsigned char index = (int)*param[0];
+	DWORD color = (int)*param[1];
 
 	// 書き込み先
 	WrtRefT dbuf = 0;
-	long l, t, dw, dh, dpitch;
+	tjs_int32 l, t, dw, dh, dpitch;
 	if (!GetClipBufferAndSize(lay, l, t, dw, dh, dbuf, dpitch)) {
 		TVPThrowExceptionMessage(TJS_W("must be Layer."));
 	}
 
 	ReadRefT sbuf = 0;
-	long spitch;
+	tjs_int32 spitch;
 	{
 		tTJSVariant val;
 		if (TJS_FAILED(layerClass->PropGet(0, TJS_W("provinceImageBuffer"), &provinceImageBufferHint, &val, lay)) ||
@@ -446,7 +452,7 @@ fillByProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJS
 			TVPThrowExceptionMessage(TJS_W("no province image."));
 		}
 		if (TJS_FAILED(layerClass->PropGet(0, TJS_W("provinceImageBufferPitch"), &provinceImageBufferPitchHint, &val, lay)) ||
-			(spitch = (long)val.AsInteger()) == 0) {
+			(spitch = (tjs_int32)val.AsInteger()) == 0) {
 			TVPThrowExceptionMessage(TJS_W("no province pitch."));
 		}
 	}
@@ -454,11 +460,11 @@ fillByProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJS
 	
 	for (int y = 0; y < dh; y++) {
 		ReadRefT q = sbuf;
-		tjs_uint32 *p = (tjs_uint32*)dbuf;
+		DWORD *p = (DWORD*)dbuf;
 		ttstr s;
 		for (int x = 0; x < dw; x++) {
 			if (*q == index) {
-				*(tjs_uint32*)p = color;
+				*(DWORD*)p = color;
 			}
 			q++;
 			p++;
