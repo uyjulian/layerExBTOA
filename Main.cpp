@@ -162,7 +162,7 @@ copyRightBlueToLeftAlpha(tTJSVariant *result, tjs_int numparams, tTJSVariant **p
 		dbuf += dpitch;
 	}
 	ncbPropAccessor layObj(lay);
-	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)0, (tjs_int64)0, (tjs_int64)dw, (tjs_int64)dh);
+	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tTVInteger)0, (tTVInteger)0, (tTVInteger)dw, (tTVInteger)dh);
 	return TJS_S_OK;
 }
 
@@ -198,7 +198,7 @@ copyBottomBlueToTopAlpha(tTJSVariant *result, tjs_int numparams, tTJSVariant **p
 		dbuf += dpitch;
 	}
 	ncbPropAccessor layObj(lay);
-	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)0, (tjs_int64)0, (tjs_int64)dw, (tjs_int64)dh);
+	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tTVInteger)0, (tTVInteger)0, (tTVInteger)dw, (tTVInteger)dh);
 	return TJS_S_OK;
 }
 
@@ -222,7 +222,7 @@ fillAlpha(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSDispa
 		dbuf += dpitch;
 	}
 	ncbPropAccessor layObj(lay);
-	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)l, (tjs_int64)t, (tjs_int64)dw, (tjs_int64)dh);
+	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tTVInteger)l, (tTVInteger)t, (tTVInteger)dw, (tTVInteger)dh);
 	return TJS_S_OK;
 }
 
@@ -306,7 +306,7 @@ copyAlphaToProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param,
 		dbuf += dpitch;
 	}
 	ncbPropAccessor layObj(lay);
-	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)l, (tjs_int64)t, (tjs_int64)w, (tjs_int64)h);
+	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tTVInteger)l, (tTVInteger)t, (tTVInteger)w, (tTVInteger)h);
 	return TJS_S_OK;
 }
 
@@ -491,9 +491,9 @@ clipAlphaRect(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJSD
 	}
 	
 	if (clr) {
-		layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)dl, (tjs_int64)dt, (tjs_int64)diw, (tjs_int64)dih);
+		layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tTVInteger)dl, (tTVInteger)dt, (tTVInteger)diw, (tTVInteger)dih);
 	} else {
-		layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)dl+dx, (tjs_int64)dt+dy, (tjs_int64)w, (tjs_int64)h);
+		layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tTVInteger)(dl+dx), (tTVInteger)(dt+dy), (tTVInteger)w, (tTVInteger)h);
 	}
 	return TJS_S_OK;
 none:
@@ -503,7 +503,7 @@ none:
 			WrtRefT  p = dbuf + y * dpitch + 3;
 			for (tjs_int32 x = 0; x < diw; x++, p+=4) *p = clrval;
 		}
-		layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)dl, (tjs_int64)dt, (tjs_int64)diw, (tjs_int64)dih);
+		layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tTVInteger)dl, (tTVInteger)dt, (tTVInteger)diw, (tTVInteger)dih);
 	}
 	return TJS_S_OK;
 }
@@ -605,7 +605,7 @@ fillByProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJS
 		dbuf += dpitch;
 	}
 	ncbPropAccessor layObj(lay);
-	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tjs_int64)l, (tjs_int64)t, (tjs_int64)dw, (tjs_int64)dh);
+	layObj.FuncCall(0, TJS_W("update"), &updateHint, NULL, (tTVInteger)l, (tTVInteger)t, (tTVInteger)dw, (tTVInteger)dh);
 	return TJS_S_OK;
 }
 
@@ -615,10 +615,10 @@ fillToProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJS
 	iTJSDispatch2 *layerClass = getLayerClass();
 	
 	if (numparams < 2) return TJS_E_BADPARAMCOUNT;
-	tjs_int32 rcolor = ((int)*param[0]);
+	tjs_int32 rcolor = ((tjs_int32)(tTVInteger)*param[0]);
 	PixelT color = rcolor & 0xFFFFFF;
 	bool allmatch = rcolor < 0;
-	unsigned char index = (int)*param[1];
+	unsigned char index = (unsigned char)(tTVInteger)*param[1];
 	tjs_int32 threshold = 64;
 	if (TJS_PARAM_EXIST(2)) {
 		threshold = (tjs_int32)(param[2]->AsInteger());
