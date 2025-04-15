@@ -1,5 +1,5 @@
 
-SOURCES += Main.cpp tlg5/slide.cpp
+SOURCES += Main.cpp
 
 PROJECT_BASENAME = layerExBTOA
 
