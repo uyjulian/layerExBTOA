@@ -615,10 +615,10 @@ fillToProvince(tTJSVariant *result, tjs_int numparams, tTJSVariant **param, iTJS
 	iTJSDispatch2 *layerClass = getLayerClass();
 	
 	if (numparams < 2) return TJS_E_BADPARAMCOUNT;
-	tjs_int32 rcolor = ((tjs_int32)(tTVInteger)*param[0]);
+	tjs_uint32 rcolor = ((tjs_uint32)(param[0])->AsInteger());
 	PixelT color = rcolor & 0xFFFFFF;
 	bool allmatch = rcolor < 0;
-	unsigned char index = (unsigned char)(tTVInteger)*param[1];
+	unsigned char index = (int)(tTVInteger)*param[1];
 	tjs_int32 threshold = 64;
 	if (TJS_PARAM_EXIST(2)) {
 		threshold = (tjs_int32)(param[2]->AsInteger());
